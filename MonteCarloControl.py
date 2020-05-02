@@ -3,32 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+import pickle
 
-
-
-env = gym.make('Blackjack-v0')
-
-def simulate_episodes(episodes, env, policy = 'random'):
-
-    rewards = []
-    for _ in range(episodes):
-        state = env.reset()
-        # print(state)
-        while True:
-            if policy == "random":
-                action = env.action_space.sample() # takes random action from environment's action space
-                # print(action)
-            else:
-                pass
-            state, reward, done, info = env.step(action) # OpenAI gym gives feedback in this tuple form : state,reward,if_done?,other relevant info
-            # print(state)
-            if done:
-                # print('Game has ended! Your Reward: ', reward)
-                # print('You won :)\n') if reward > 0 else print('You lost :(\n')
-                rewards.append(reward)
-                break
-    
-    print(f'Sum of Rewards = {sum(rewards)}')
 
 def get_action(state, Q):
     if state not in Q.keys():
@@ -119,8 +95,9 @@ def plot_blackjack_values(V):
     
 if __name__ == "__main__":
     env = gym.make('Blackjack-v0')
-    # simulate_episodes(episodes = 100, env = env, policy = 'random')
     Q, Returns = mc_control_algorithm(500000, env)
+    # Save the policy
+    pickle.dump(Q, open( "Q_action_values.p", "wb" ) )
     # obtain the corresponding state-value function
     V = dict((k,np.max(v)) for k, v in Q.items())
     # plot the state-value function

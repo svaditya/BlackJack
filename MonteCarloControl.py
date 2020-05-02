@@ -114,14 +114,16 @@ def plot_blackjack_values(V):
     ax = fig.add_subplot(212, projection='3d')
     ax.set_title('No Usable Ace')
     get_figure(False, ax)
+    plt.savefig('MC_Control_StateValueFunction_Viz.png')
     plt.show()
     
 if __name__ == "__main__":
     env = gym.make('Blackjack-v0')
-    simulate_episodes(episodes = 100, env = env, policy = 'random')
-    Q, Returns = mc_control_algorithm(1000, env)
+    # simulate_episodes(episodes = 100, env = env, policy = 'random')
+    Q, Returns = mc_control_algorithm(500000, env)
     # obtain the corresponding state-value function
     V = dict((k,np.max(v)) for k, v in Q.items())
     # plot the state-value function
     plot_blackjack_values(V)
+
     

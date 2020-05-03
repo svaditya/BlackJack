@@ -17,13 +17,23 @@ def get_action(state, Q):
 def get_episode(env, Q):
     episode = []
     state = env.reset()
+    # To ensure exploring starts
+    action = np.random.choice(range(env.action_space.n)) 
+    if state not in Q.keys():
+        Q[state] = [0,0]
+    
+
     while True:
-        action, Q = get_action(state, Q)
+        
         next_state, reward, done, info = env.step(action) # OpenAI gym gives feedback in this tuple form : state,reward,if_done?,other relevant info
         episode.append((state, action, reward))
-        state = next_state
+        
         if done:
             break
+        
+        state = next_state
+        action, Q = get_action(state, Q)
+
     return episode, Q
 
 def mc_control_algorithm(iters, env):
@@ -62,7 +72,7 @@ def mc_control_algorithm(iters, env):
 
     return Q, Returns 
 
-def plot_blackjack_values(V):
+def plot_blackjack_values(V, filename):
     
     def get_Z(x, y, usable_ace):
         if (x,y,usable_ace) in V:
@@ -90,7 +100,7 @@ def plot_blackjack_values(V):
     ax = fig.add_subplot(212, projection='3d')
     ax.set_title('No Usable Ace')
     get_figure(False, ax)
-    plt.savefig('MC_Control_StateValueFunction_Viz.png')
+    plt.savefig(filename)
     plt.show()
     
 if __name__ == "__main__":
@@ -101,6 +111,6 @@ if __name__ == "__main__":
     # obtain the corresponding state-value function
     V = dict((k,np.max(v)) for k, v in Q.items())
     # plot the state-value function
-    plot_blackjack_values(V)
+    plot_blackjack_values(V, "MC_Control_StateValueFunction_Viz.png")
 
     
